@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,12 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @date 2019/4/6 0006 19:22
  */
 @Configuration
+@Order(1)
 public class MySecurityConfig extends WebSecurityConfigurerAdapter {
-
-//    @Qualifier("inMemoryUserDetailsManager")
-//    @Qualifier("ssoUserDetailsService")
-//    @Autowired
-//    private UserDetailsService userDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,23 +38,14 @@ public class MySecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-//        http.httpBasic()   //指定身份认证的方式为表单登录
-//                .and()
-//                .authorizeRequests() //对请求授权
-//                .anyRequest()        //任何请求
-//                .authenticated()    //安全认证
-//                .and().csrf().disable().cors().disable();
-//                .userDetailsService(userDetailsService);
+        http.formLogin()
+            .and()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .csrf().disable().cors().disable();
 
-        http.requestMatchers()
-                .antMatchers("/login")
-                .antMatchers("/oauth/authorize")
-                .and()
-                .authorizeRequests()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin().loginPage("/login").permitAll()	// 自定义登录页面，这里配置了 loginPage, 就会通过 LoginController 的 login 接口加载登录页面
-                .and().csrf().disable().cors().disable();
     }
 }
 

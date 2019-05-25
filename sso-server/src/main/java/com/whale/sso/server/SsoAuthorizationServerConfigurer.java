@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -13,9 +12,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
-
-import javax.annotation.Resource;
-import java.io.Serializable;
 
 /**
  * @author ljy
@@ -36,18 +32,16 @@ public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigu
                 .secret(passwordEncoder().encode("whale1secret"))
                 .authorizedGrantTypes("authorization_code","refresh_token")
                 .scopes("all")
-//                .redirectUris("http://127.0.0.1:8080/client1/login")
-//                .redirectUris("http://127.0.0.1:8080/client1/index.html")
                 .redirectUris("http://127.0.0.1:8080/client1/login")
-//                .autoApprove(true)  //自动认证
-                .accessTokenValiditySeconds(3600 * 1000);
+                .accessTokenValiditySeconds(3600 * 1000)
 
-//            .and()
-//                .withClient("whale2")
-//                .secret("whale2secret")
-//                .authorizedGrantTypes("authorization_code","refresh_token")
-//                .scopes("all")
-//                .redirectUris("http://127.0.0.1:8080/client2/login");
+            .and()
+                .withClient("whale2")
+                .secret(passwordEncoder().encode("whale2secret"))
+                .authorizedGrantTypes("authorization_code","refresh_token")
+                .scopes("all")
+                .redirectUris("http://127.0.0.1:8060/client2/login")
+                .accessTokenValiditySeconds(3600 * 1000);
     }
 
     /**
@@ -77,10 +71,9 @@ public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigu
          */
 //        security.allowFormAuthenticationForClients();
 //        security.tokenKeyAccess("isAuthenticated()");
-//        security.tokenKeyAccess("isAuthenticated()");
+//        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
 
-        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
-
+          security.tokenKeyAccess("isAuthenticated()");
     }
 
     //jwt token 配置

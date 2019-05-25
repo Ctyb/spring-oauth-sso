@@ -19,6 +19,7 @@ import java.io.Serializable;
  */
 
 @SpringBootApplication
+@EnableOAuth2Sso
 @RestController
 public class SsoClient1Application  {
 
