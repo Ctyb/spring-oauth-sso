@@ -3,6 +3,7 @@ package com.whale;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
  * @date 2019/5/24 0024 9:30
  */
 
+@EnableResourceServer  //资源服务器
 @SpringBootApplication
 @RestController
 public class SsoServerApplication{
@@ -26,8 +28,12 @@ public class SsoServerApplication{
 
     }
 
+    /**
+     * 资源服务器提供的受保护接口
+     * @return
+     */
     @GetMapping("/hello")
     public String hello(){
-        return "hello 认证服务器";
+        return "hello 资源服务器";
     }
 }

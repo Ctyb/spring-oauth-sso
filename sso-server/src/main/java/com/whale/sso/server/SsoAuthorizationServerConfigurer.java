@@ -2,6 +2,8 @@ package com.whale.sso.server;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -23,7 +25,7 @@ import java.io.Serializable;
  * @date 2019/5/24 0024 9:34
  */
 @Configuration
-@EnableAuthorizationServer
+@EnableAuthorizationServer //认证服务器
 public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigurerAdapter {
 
     @Override
@@ -31,15 +33,21 @@ public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigu
 
         clients.inMemory()
                 .withClient("whale1")
-                .secret("whale1secret")
+                .secret(passwordEncoder().encode("whale1secret"))
                 .authorizedGrantTypes("authorization_code","refresh_token")
                 .scopes("all")
+//                .redirectUris("http://127.0.0.1:8080/client1/login")
+//                .redirectUris("http://127.0.0.1:8080/client1/index.html")
+                .redirectUris("http://127.0.0.1:8080/client1/login")
+//                .autoApprove(true)  //自动认证
+                .accessTokenValiditySeconds(3600 * 1000);
 
-            .and()
-                .withClient("whale2")
-                .secret("whale2secret")
-                .authorizedGrantTypes("authorization_code","refresh_token")
-                .scopes("all");
+//            .and()
+//                .withClient("whale2")
+//                .secret("whale2secret")
+//                .authorizedGrantTypes("authorization_code","refresh_token")
+//                .scopes("all")
+//                .redirectUris("http://127.0.0.1:8080/client2/login");
     }
 
     /**
@@ -67,8 +75,12 @@ public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigu
          * tokenKey 就是 signingKey 签名秘钥
          *
          */
+//        security.allowFormAuthenticationForClients();
+//        security.tokenKeyAccess("isAuthenticated()");
+//        security.tokenKeyAccess("isAuthenticated()");
 
-        security.tokenKeyAccess("isAuthenticated()");
+        security.tokenKeyAccess("permitAll()").checkTokenAccess("isAuthenticated()");
+
     }
 
     //jwt token 配置
@@ -85,4 +97,10 @@ public class SsoAuthorizationServerConfigurer extends AuthorizationServerConfigu
         jwtAccessTokenConverter.setSigningKey("whale");
         return  jwtAccessTokenConverter;
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();//也可以自定义 只要实现PasswordEncoder接口
+    }
+
 }
